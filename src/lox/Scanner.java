@@ -70,7 +70,10 @@ class Scanner {
         // comments generally terminate at the end of lines
         if (match('/')) {
           while (peek() != '\n' && !isAtEnd()) advance();
-        } else {
+        } else if (match('*')){
+          while ((peek() != '/' || peek() != '*') && !isAtEnd()) advance(); // a c style comment handler
+        }
+        else {
           addToken(SLASH);
         }
       }
