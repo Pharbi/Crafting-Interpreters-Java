@@ -66,6 +66,7 @@ class Scanner {
       case '=' -> addToken(match('=') ? EQUAL_EQUAL : EQUAL);
       case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
       case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
+      case '?' -> addToken(match(':') ? TERNARY : IDENTIFIER);
       case '/' -> {
         // comments generally terminate at the end of lines
         if (match('/')) {
