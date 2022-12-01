@@ -47,11 +47,11 @@ public class Lox {
     Scanner scanner = new Scanner(source);
     List<Token> tokens = scanner.scanTokens();
     Parser parser = new Parser(tokens);
-    Expr expression = parser.parse();
+    List<Stmt> statements = parser.parse();
 
     if (hadError) return;
 
-    interpreter.interpret(expression);
+    interpreter.interpret(statements);
   }
 
   // good idea to separate the code that generates the error from the code that reports them
