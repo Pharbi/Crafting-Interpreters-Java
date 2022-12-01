@@ -32,6 +32,11 @@ class AstPrinter implements Expr.Visitor<String>, Expr.VisitorRPN<String>{
     return parenthesize(expr.operator.lexeme, expr.right);
   }
 
+  @Override
+  public String visitVariableExpr(Expr.Variable expr) {
+    return null;
+  }
+
   private String parenthesize(String name, Expr... exprs) {
     StringBuilder builder = new StringBuilder();
 
@@ -94,5 +99,10 @@ class AstPrinter implements Expr.Visitor<String>, Expr.VisitorRPN<String>{
   @Override
   public String visitUnaryExprRPN(Expr.Unary expr) {
     return parenthesizeRPN(expr.operator.lexeme, expr.right);
+  }
+
+  @Override
+  public String visitVariableExprRPN(Expr.Variable expr) {
+    return null;
   }
 }

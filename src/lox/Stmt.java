@@ -3,55 +3,65 @@ package lox;
 import java.util.List;
 
 abstract class Stmt {
-  interface Visitor<R> {
-    R visitExpressionStmt(Expression stmt);
+ interface Visitor<R> {
+ R visitExpressionStmt(Expression stmt);
+ R visitPrintStmt(Print stmt);
+ R visitVarStmt(Var stmt);
+ }
 
-    R visitPrintStmt(Print stmt);
-  }
+ abstract <R> R accept(Visitor<R> visitor);
+ interface VisitorRPN<R> {
+ R visitExpressionStmtRPN(Expression stmt);
+ R visitPrintStmtRPN(Print stmt);
+ R visitVarStmtRPN(Var stmt);
+ }
 
-  abstract <R> R accept(Visitor<R> visitor);
+ abstract <R> R acceptRPN(VisitorRPN<R> visitor);
+ static class Expression extends Stmt {
+ final Expr expression;
+ Expression(Expr expression) {
+ this.expression = expression;
+ }
 
-  interface VisitorRPN<R> {
-    R visitExpressionStmtRPN(Expression stmt);
+ @Override
+ <R> R accept(Visitor<R> visitor) {
+ return visitor.visitExpressionStmt(this);
+ }
+ @Override
+ <R> R acceptRPN(VisitorRPN<R> visitor) {
+ return visitor.visitExpressionStmtRPN(this);
+ }
+ }
+ static class Print extends Stmt {
+ final Expr expression;
+ Print(Expr expression) {
+ this.expression = expression;
+ }
 
-    R visitPrintStmtRPN(Print stmt);
-  }
+ @Override
+ <R> R accept(Visitor<R> visitor) {
+ return visitor.visitPrintStmt(this);
+ }
+ @Override
+ <R> R acceptRPN(VisitorRPN<R> visitor) {
+ return visitor.visitPrintStmtRPN(this);
+ }
+ }
+ static class Var extends Stmt {
+ final Token name;
+ final Expr initializer;
+ Var(Token name, Expr initializer) {
+ this.name = name;
+ this.initializer = initializer;
+ }
 
-  abstract <R> R acceptRPN(VisitorRPN<R> visitor);
-
-  static class Expression extends Stmt {
-    final Expr expression;
-
-    Expression(Expr expression) {
-      this.expression = expression;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitExpressionStmt(this);
-    }
-
-    @Override
-    <R> R acceptRPN(VisitorRPN<R> visitor) {
-      return visitor.visitExpressionStmtRPN(this);
-    }
-  }
-
-  static class Print extends Stmt {
-    final Expr expression;
-
-    Print(Expr expression) {
-      this.expression = expression;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitPrintStmt(this);
-    }
-
-    @Override
-    <R> R acceptRPN(VisitorRPN<R> visitor) {
-      return visitor.visitPrintStmtRPN(this);
-    }
-  }
+ @Override
+ <R> R accept(Visitor<R> visitor) {
+ return visitor.visitVarStmt(this);
+ }
+ @Override
+ <R> R acceptRPN(VisitorRPN<R> visitor) {
+ return visitor.visitVarStmtRPN(this);
+ }
+ }
 }
