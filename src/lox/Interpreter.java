@@ -1,5 +1,7 @@
 package lox;
 
+import static lox.TokenType.SLASH;
+
 class Interpreter implements Expr.Visitor<Object>{
 
   void interpret(Expr expression){
@@ -66,8 +68,20 @@ class Interpreter implements Expr.Visitor<Object>{
           return (double) left + (double) right;
         }
         if (left instanceof String && right instanceof String){
-          return (String) left + (String) right;
+          return left + (String) right;
         }
+
+        if (left instanceof String && right instanceof Double){
+          return left + stringify(right);
+        }
+
+        if (left instanceof Double && right instanceof String) {
+          System.out.println(left);
+          System.out.println(right);
+          return stringify(left) + right;
+        }
+
+        throw new RuntimeError(expr.operator, "Operands must both be of the same type (numbers)");
       }
       case SLASH -> {
         checkNumberOperands(expr.operator, left, right);
@@ -116,7 +130,12 @@ class Interpreter implements Expr.Visitor<Object>{
   }
 
   private void checkNumberOperands(Token operator, Object a, Object b){
-    if (a instanceof Double && b instanceof Double) return;
+    if (a instanceof Double && b instanceof Double) {
+     if (operator.type == SLASH && (double) b == 0.0) {
+       throw new RuntimeError(operator, "This operand is not able to be used to divide by zero");
+     }
+     return;
+    }
     if (a instanceof String && b instanceof String) return;
     throw new RuntimeError(operator, "Operands must both be of the same type (numbers)");
   }
