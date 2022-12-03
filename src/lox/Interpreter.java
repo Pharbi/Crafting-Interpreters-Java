@@ -11,7 +11,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>{
   void interpret(List<Stmt> statements){
     try {
       for (Stmt statement : statements) {
-        execute(statement);
+        if (statement instanceof Stmt.Expression){
+          Object evaluatedExpr = evaluate(((Stmt.Expression) statement).expression);
+          System.out.println(stringify(evaluatedExpr));
+        } else {
+          execute(statement);
+        }
       }
     } catch (RuntimeError err){
       Lox.runtimeError(err);
@@ -134,12 +139,31 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>{
     return value;
   }
 
+  @Override
+  public Void visitBlockStmt(Stmt.Block stmt){
+    executeBlock(stmt.statements, new Environment(environment));
+    return null;
+  }
+
   private Object evaluate(Expr expr){
     return expr.accept(this);
   }
 
   private void execute(Stmt stmt){
     stmt.accept(this);
+  }
+
+  void executeBlock(List<Stmt> statements, Environment env){
+    Environment prev = this.environment;
+
+    try {
+      this.environment = env;
+      for (Stmt statement : statements){
+        execute(statement);
+      }
+    } finally {
+      this.environment = prev;
+    }
   }
 
   private boolean isTruthy(Object object){

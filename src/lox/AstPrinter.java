@@ -12,6 +12,11 @@ class AstPrinter implements Expr.Visitor<String>, Expr.VisitorRPN<String>{
   }
 
   @Override
+  public String visitAssignExpr(Expr.Assign expr) {
+    return null;
+  }
+
+  @Override
   public String visitBinaryExpr(Expr.Binary expr) {
     return parenthesize(expr.operator.lexeme, expr.left, expr.right);
   }
@@ -78,6 +83,11 @@ class AstPrinter implements Expr.Visitor<String>, Expr.VisitorRPN<String>{
     System.out.println(new AstPrinter().print(expression));
     System.out.println("RPN way");
     System.out.println(new AstPrinter().printRPN(expression));
+  }
+
+  @Override
+  public String visitAssignExprRPN(Expr.Assign expr) {
+    return null;
   }
 
   @Override
