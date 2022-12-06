@@ -8,6 +8,8 @@ abstract class Expr {
 
     R visitBinaryExpr(Binary expr);
 
+    R visitCallExpr(Call expr);
+
     R visitGroupingExpr(Grouping expr);
 
     R visitLiteralExpr(Literal expr);
@@ -25,6 +27,8 @@ abstract class Expr {
     R visitAssignExprRPN(Assign expr);
 
     R visitBinaryExprRPN(Binary expr);
+
+    R visitCallExprRPN(Call expr);
 
     R visitGroupingExprRPN(Grouping expr);
 
@@ -78,6 +82,28 @@ abstract class Expr {
     @Override
     <R> R acceptRPN(VisitorRPN<R> visitor) {
       return visitor.visitBinaryExprRPN(this);
+    }
+  }
+
+  static class Call extends Expr {
+    final Expr callee;
+    final Token paren;
+    final List<Expr> args;
+
+    Call(Expr callee, Token paren, List<Expr> args) {
+      this.callee = callee;
+      this.paren = paren;
+      this.args = args;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitCallExpr(this);
+    }
+
+    @Override
+    <R> R acceptRPN(VisitorRPN<R> visitor) {
+      return visitor.visitCallExprRPN(this);
     }
   }
 
