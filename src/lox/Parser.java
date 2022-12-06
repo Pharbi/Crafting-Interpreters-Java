@@ -58,7 +58,9 @@ class Parser {
   private Stmt statement(){
     if (match(FOR)) return forStatement();
     if (match(IF)) return ifStatement();
+    if (match(BREAK)) return breakStatement();
     if (match(PRINT)) return printStatement();
+    if (match(RETURN)) return returnStatement();
     if (match(WHILE)) return whileStatement();
     if (match(LEFT_BRACE)) return new Stmt.Block(block());
 
@@ -78,6 +80,13 @@ class Parser {
     }
 
     return new Stmt.If(cond, thenBranch, elseBranch);
+  }
+
+  private Stmt breakStatement(){
+    Token prev = previous();
+    consume(SEMICOLON, "Expected ';' after break.");
+
+    return new Stmt.Break(prev, null);
   }
 
   private Stmt whileStatement(){
@@ -134,6 +143,17 @@ class Parser {
     return new Stmt.Print(value);
   }
 
+  private Stmt returnStatement(){
+    Token keyword = previous();
+
+    Expr val = null;
+    if (!check(SEMICOLON)){
+      val = expression();
+    }
+    consume(SEMICOLON, "Expect ';' after return value.");
+    return new Stmt.Return(keyword, val);
+  }
+
   private Stmt varDeclaration(){
     Token name = consume(IDENTIFIER, "Expect variable name");
 
@@ -174,20 +194,20 @@ class Parser {
 
   private List<Stmt> block(){
     List<Stmt> statements = new ArrayList<>();
-    boolean hasBreak = false;
+    int breakIdx = -1;
     while (!check(RIGHT_BRACE) && !isAtEnd()) {
       if (check(BREAK)){
-        hasBreak = true;
-        consume(BREAK, "Expected break in block");
-        break;
+        breakIdx = statements.size();
       }
       statements.add(declaration());
     }
-    if (hasBreak) consume(SEMICOLON, "Expected ';' after break");
-    while (!check(RIGHT_BRACE)){
-      advance();
-    }
     consume(RIGHT_BRACE, "Expect '}' after block");
+    if (breakIdx > 0){
+      //  Update existing break to last statement
+      Token breakToken = ((Stmt.Break) statements.get(breakIdx)).name;
+      Stmt.Break updatedBreak = new Stmt.Break(breakToken, statements.get(statements.size() - 1));
+      statements.set(breakIdx, updatedBreak);
+    }
     return statements;
   }
 
@@ -345,12 +365,6 @@ class Parser {
     if (match(IDENTIFIER)){
       return new Expr.Variable(previous());
     }
-
-//    if (match(COMMA)){
-//      Expr expr = expression();
-//      consume(COMMA, "expect new statement after expr");
-//      return new Expr.Grouping(expr);
-//    }
 
     if (match(LEFT_PAREN)) {
       Expr expr = expression();

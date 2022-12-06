@@ -12,7 +12,11 @@ abstract class Stmt {
 
     R visitIfStmt(If stmt);
 
+    R visitBreakStmt(Break stmt);
+
     R visitPrintStmt(Print stmt);
+
+    R visitReturnStmt(Return stmt);
 
     R visitVarStmt(Var stmt);
 
@@ -30,7 +34,11 @@ abstract class Stmt {
 
     R visitIfStmtRPN(If stmt);
 
+    R visitBreakStmtRPN(Break stmt);
+
     R visitPrintStmtRPN(Print stmt);
+
+    R visitReturnStmtRPN(Return stmt);
 
     R visitVarStmtRPN(Var stmt);
 
@@ -119,6 +127,26 @@ abstract class Stmt {
     }
   }
 
+  static class Break extends Stmt {
+    final Token name;
+    final Stmt skipToStmt;
+
+    Break(Token name, Stmt skipToStmt) {
+      this.name = name;
+      this.skipToStmt = skipToStmt;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitBreakStmt(this);
+    }
+
+    @Override
+    <R> R acceptRPN(VisitorRPN<R> visitor) {
+      return visitor.visitBreakStmtRPN(this);
+    }
+  }
+
   static class Print extends Stmt {
     final Expr expression;
 
@@ -134,6 +162,26 @@ abstract class Stmt {
     @Override
     <R> R acceptRPN(VisitorRPN<R> visitor) {
       return visitor.visitPrintStmtRPN(this);
+    }
+  }
+
+  static class Return extends Stmt {
+    final Token keyword;
+    final Expr value;
+
+    Return(Token keyword, Expr value) {
+      this.keyword = keyword;
+      this.value = value;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitReturnStmt(this);
+    }
+
+    @Override
+    <R> R acceptRPN(VisitorRPN<R> visitor) {
+      return visitor.visitReturnStmtRPN(this);
     }
   }
 
