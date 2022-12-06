@@ -33,6 +33,11 @@ class AstPrinter implements Expr.Visitor<String>, Expr.VisitorRPN<String>{
   }
 
   @Override
+  public String visitLogicalExpr(Expr.Logical expr) {
+    return null;
+  }
+
+  @Override
   public String visitUnaryExpr(Expr.Unary expr) {
     return parenthesize(expr.operator.lexeme, expr.right);
   }
@@ -104,6 +109,11 @@ class AstPrinter implements Expr.Visitor<String>, Expr.VisitorRPN<String>{
   public String visitLiteralExprRPN(Expr.Literal expr) {
     if (expr.value == null) return "nil";
     return expr.value.toString();
+  }
+
+  @Override
+  public String visitLogicalExprRPN(Expr.Logical expr) {
+    return null;
   }
 
   @Override
