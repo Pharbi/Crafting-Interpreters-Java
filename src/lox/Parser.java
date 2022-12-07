@@ -58,7 +58,7 @@ class Parser {
   private Stmt statement(){
     if (match(FOR)) return forStatement();
     if (match(IF)) return ifStatement();
-    if (match(BREAK)) return breakStatement();
+//    if (match(BREAK)) return breakStatement();
     if (match(PRINT)) return printStatement();
     if (match(RETURN)) return returnStatement();
     if (match(WHILE)) return whileStatement();
@@ -82,12 +82,12 @@ class Parser {
     return new Stmt.If(cond, thenBranch, elseBranch);
   }
 
-  private Stmt breakStatement(){
-    Token prev = previous();
-    consume(SEMICOLON, "Expected ';' after break.");
-
-    return new Stmt.Break(prev, null);
-  }
+//  private Stmt breakStatement(){
+//    Token prev = previous();
+//    consume(SEMICOLON, "Expected ';' after break.");
+//
+//    return new Stmt.Break(prev, null);
+//  }
 
   private Stmt whileStatement(){
     consume(LEFT_PAREN, "Expect '(' after 'while'.");
@@ -194,20 +194,20 @@ class Parser {
 
   private List<Stmt> block(){
     List<Stmt> statements = new ArrayList<>();
-    int breakIdx = -1;
+//    int breakIdx = -1;
     while (!check(RIGHT_BRACE) && !isAtEnd()) {
-      if (check(BREAK)){
-        breakIdx = statements.size();
-      }
+//      if (check(BREAK)){
+//        breakIdx = statements.size();
+//      }
       statements.add(declaration());
     }
     consume(RIGHT_BRACE, "Expect '}' after block");
-    if (breakIdx > 0){
-      //  Update existing break to last statement
-      Token breakToken = ((Stmt.Break) statements.get(breakIdx)).name;
-      Stmt.Break updatedBreak = new Stmt.Break(breakToken, statements.get(statements.size() - 1));
-      statements.set(breakIdx, updatedBreak);
-    }
+//    if (breakIdx > 0){
+//      //  Update existing break to last statement
+//      Token breakToken = ((Stmt.Break) statements.get(breakIdx)).name;
+//      Stmt.Break updatedBreak = new Stmt.Break(breakToken, statements.get(statements.size() - 1));
+//      statements.set(breakIdx, updatedBreak);
+//    }
     return statements;
   }
 

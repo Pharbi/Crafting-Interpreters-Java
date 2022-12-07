@@ -12,8 +12,6 @@ abstract class Stmt {
 
     R visitIfStmt(If stmt);
 
-    R visitBreakStmt(Break stmt);
-
     R visitPrintStmt(Print stmt);
 
     R visitReturnStmt(Return stmt);
@@ -33,8 +31,6 @@ abstract class Stmt {
     R visitFunctionStmtRPN(Function stmt);
 
     R visitIfStmtRPN(If stmt);
-
-    R visitBreakStmtRPN(Break stmt);
 
     R visitPrintStmtRPN(Print stmt);
 
@@ -124,26 +120,6 @@ abstract class Stmt {
     @Override
     <R> R acceptRPN(VisitorRPN<R> visitor) {
       return visitor.visitIfStmtRPN(this);
-    }
-  }
-
-  static class Break extends Stmt {
-    final Token name;
-    final Stmt skipToStmt;
-
-    Break(Token name, Stmt skipToStmt) {
-      this.name = name;
-      this.skipToStmt = skipToStmt;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitBreakStmt(this);
-    }
-
-    @Override
-    <R> R acceptRPN(VisitorRPN<R> visitor) {
-      return visitor.visitBreakStmtRPN(this);
     }
   }
 
