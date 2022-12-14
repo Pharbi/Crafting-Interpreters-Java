@@ -37,6 +37,10 @@ class Environment {
     return ancestor(distance).values.get(name);
   }
 
+  Object getAtIndex(int index){
+    return null;
+  }
+
   void assignAt(int distance, Token name, Object value){
     ancestor(distance).values.put(name.lexeme, value);
   }
